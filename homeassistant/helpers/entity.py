@@ -4,6 +4,7 @@ from __future__ import annotations
 from abc import ABC
 import asyncio
 from collections.abc import Coroutine, Iterable, Mapping, MutableMapping
+from contextlib import suppress
 from dataclasses import dataclass
 from datetime import timedelta
 from enum import Enum, auto
@@ -315,7 +316,7 @@ class Entity(ABC):
 
     # Entity Properties
     _attr_assumed_state: bool = False
-    _attr_attribution: str | None = None
+    __attr_attribution: str | None = None
     _attr_available: bool = True
     _attr_capability_attributes: Mapping[str, Any] | None = None
     _attr_context_recent_time: timedelta = timedelta(seconds=5)
@@ -343,6 +344,10 @@ class Entity(ABC):
         cls.__combined_unrecorded_attributes = (
             cls._entity_component_unrecorded_attributes | cls._unrecorded_attributes
         )
+        # Handle sub classes overwriting cached attributes.
+        if cls._attr_attribution is not Entity._attr_attribution:
+            cls.__attr_attribution = cls._attr_attribution  # type: ignore[assignment]
+            cls._attr_attribution = Entity._attr_attribution  # type: ignore[method-assign]
 
     @property
     def should_poll(self) -> bool:
@@ -635,6 +640,16 @@ class Entity(ABC):
         return True
 
     @property
+    def _attr_attribution(self) -> str | None:
+        return self.__attr_attribution
+
+    @_attr_attribution.setter
+    def _attr_attribution(self, value: str | None) -> None:
+        self.__attr_attribution = value
+        with suppress(AttributeError):
+            del self.attribution
+
+    @cached_property
     def attribution(self) -> str | None:
         """Return the attribution."""
         return self._attr_attribution

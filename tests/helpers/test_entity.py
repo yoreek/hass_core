@@ -1657,3 +1657,36 @@ async def test_change_entity_id(
     assert len(result) == 2
     assert len(ent.added_calls) == 3
     assert len(ent.remove_calls) == 2
+
+
+@pytest.mark.parametrize(("property", "values"), [("attribution", ["abcd", "efgh"])])
+async def test_cached_entity_properties(
+    hass: HomeAssistant, property: str, values: Any
+) -> None:
+    """Test entity properties are cached."""
+    ent = entity.Entity()
+    setattr(ent, f"_attr_{property}", values[0])
+    assert getattr(ent, property) == values[0]
+
+    # Test update
+    setattr(ent, f"_attr_{property}", values[1])
+    assert getattr(ent, property) == values[1]
+
+
+async def test_cached_entity_property_class_attribute(hass: HomeAssistant) -> None:
+    """Test entity properties on class level work."""
+    property = "attribution"
+    values = ["abcd", "efgh"]
+
+    class EntityWithClassAttribute(entity.Entity):
+        _attr_attribution = values[0]
+
+    ent1 = EntityWithClassAttribute()
+    ent2 = EntityWithClassAttribute()
+    assert getattr(ent1, property) == values[0]
+    assert getattr(ent2, property) == values[0]
+
+    # Test update
+    setattr(ent1, f"_attr_{property}", values[1])
+    assert getattr(ent1, property) == values[1]
+    assert getattr(ent2, property) == values[0]
