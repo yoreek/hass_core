@@ -296,8 +296,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         """Remove all user-defined groups and load new ones from config."""
         auto = [e for e in component.entities if not e.user_defined]
 
-        if (conf := await component.async_prepare_reload()) is None:
-            return
+        conf = await component.async_prepare_reload()
         await _async_process_config(hass, conf)
 
         await component.async_add_entities(auto)
