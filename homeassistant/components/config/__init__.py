@@ -27,6 +27,7 @@ SECTIONS = (
     "core",
     "device_registry",
     "entity_registry",
+    "label_registry",
     "script",
     "scene",
 )

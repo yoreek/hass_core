@@ -199,6 +199,7 @@ async def test_loading_from_storage(
                     "hw_version": "hw_version",
                     "id": "abcdefghijklm",
                     "identifiers": [["serial", "123456ABCDEF"]],
+                    "labels": {"label1", "label2"},
                     "manufacturer": "manufacturer",
                     "model": "model",
                     "name_by_user": "Test Friendly Name",
@@ -242,6 +243,7 @@ async def test_loading_from_storage(
         hw_version="hw_version",
         id="abcdefghijklm",
         identifiers={("serial", "123456ABCDEF")},
+        labels={"label1", "label2"},
         manufacturer="manufacturer",
         model="model",
         name_by_user="Test Friendly Name",
@@ -277,12 +279,12 @@ async def test_loading_from_storage(
 
 
 @pytest.mark.parametrize("load_registries", [False])
-async def test_migration_1_1_to_1_4(
+async def test_migration_1_1_to_1_5(
     hass: HomeAssistant,
     hass_storage: dict[str, Any],
     mock_config_entry: MockConfigEntry,
 ) -> None:
-    """Test migration from version 1.1 to 1.4."""
+    """Test migration from version 1.1 to 1.5."""
     hass_storage[dr.STORAGE_KEY] = {
         "version": 1,
         "minor_version": 1,
@@ -366,6 +368,7 @@ async def test_migration_1_1_to_1_4(
                     "hw_version": None,
                     "id": "abcdefghijklm",
                     "identifiers": [["serial", "123456ABCDEF"]],
+                    "labels": [],
                     "manufacturer": "manufacturer",
                     "model": "model",
                     "name": "name",
@@ -384,6 +387,7 @@ async def test_migration_1_1_to_1_4(
                     "hw_version": None,
                     "id": "invalid-entry-type",
                     "identifiers": [["serial", "mock-id-invalid-entry"]],
+                    "labels": [],
                     "manufacturer": None,
                     "model": None,
                     "name_by_user": None,
@@ -407,12 +411,12 @@ async def test_migration_1_1_to_1_4(
 
 
 @pytest.mark.parametrize("load_registries", [False])
-async def test_migration_1_2_to_1_4(
+async def test_migration_1_2_to_1_5(
     hass: HomeAssistant,
     hass_storage: dict[str, Any],
     mock_config_entry: MockConfigEntry,
 ) -> None:
-    """Test migration from version 1.2 to 1.3."""
+    """Test migration from version 1.2 to 1.5."""
     hass_storage[dr.STORAGE_KEY] = {
         "version": 1,
         "minor_version": 2,
@@ -495,6 +499,7 @@ async def test_migration_1_2_to_1_4(
                     "hw_version": None,
                     "id": "abcdefghijklm",
                     "identifiers": [["serial", "123456ABCDEF"]],
+                    "labels": [],
                     "manufacturer": "manufacturer",
                     "model": "model",
                     "name": "name",
@@ -513,6 +518,7 @@ async def test_migration_1_2_to_1_4(
                     "hw_version": None,
                     "id": "invalid-entry-type",
                     "identifiers": [["serial", "mock-id-invalid-entry"]],
+                    "labels": [],
                     "manufacturer": None,
                     "model": None,
                     "name_by_user": None,
@@ -528,12 +534,12 @@ async def test_migration_1_2_to_1_4(
 
 
 @pytest.mark.parametrize("load_registries", [False])
-async def test_migration_1_3_to_1_4(
+async def test_migration_1_3_to_1_5(
     hass: HomeAssistant,
     hass_storage: dict[str, Any],
     mock_config_entry: MockConfigEntry,
 ):
-    """Test migration from version 1.3 to 1.4."""
+    """Test migration from version 1.3 to 1.5."""
     hass_storage[dr.STORAGE_KEY] = {
         "version": 1,
         "minor_version": 3,
@@ -618,6 +624,7 @@ async def test_migration_1_3_to_1_4(
                     "hw_version": "hw_version",
                     "id": "abcdefghijklm",
                     "identifiers": [["serial", "123456ABCDEF"]],
+                    "labels": [],
                     "manufacturer": "manufacturer",
                     "model": "model",
                     "name": "name",
@@ -636,6 +643,134 @@ async def test_migration_1_3_to_1_4(
                     "hw_version": None,
                     "id": "invalid-entry-type",
                     "identifiers": [["serial", "mock-id-invalid-entry"]],
+                    "labels": [],
+                    "manufacturer": None,
+                    "model": None,
+                    "name_by_user": None,
+                    "name": None,
+                    "serial_number": None,
+                    "sw_version": None,
+                    "via_device_id": None,
+                },
+            ],
+            "deleted_devices": [],
+        },
+    }
+
+
+@pytest.mark.parametrize("load_registries", [False])
+async def test_migration_1_4_to_1_5(
+    hass: HomeAssistant,
+    hass_storage: dict[str, Any],
+    mock_config_entry: MockConfigEntry,
+):
+    """Test migration from version 1.4 to 1.5."""
+    hass_storage[dr.STORAGE_KEY] = {
+        "version": 1,
+        "minor_version": 3,
+        "key": dr.STORAGE_KEY,
+        "data": {
+            "devices": [
+                {
+                    "area_id": None,
+                    "config_entries": [mock_config_entry.entry_id],
+                    "configuration_url": None,
+                    "connections": [["Zigbee", "01.23.45.67.89"]],
+                    "disabled_by": None,
+                    "entry_type": "service",
+                    "hw_version": "hw_version",
+                    "id": "abcdefghijklm",
+                    "identifiers": [["serial", "123456ABCDEF"]],
+                    "manufacturer": "manufacturer",
+                    "model": "model",
+                    "name": "name",
+                    "name_by_user": None,
+                    "serial_number": None,
+                    "sw_version": "version",
+                    "via_device_id": None,
+                },
+                {
+                    "area_id": None,
+                    "config_entries": [None],
+                    "configuration_url": None,
+                    "connections": [],
+                    "disabled_by": None,
+                    "entry_type": None,
+                    "hw_version": None,
+                    "id": "invalid-entry-type",
+                    "identifiers": [["serial", "mock-id-invalid-entry"]],
+                    "manufacturer": None,
+                    "model": None,
+                    "name_by_user": None,
+                    "name": None,
+                    "serial_number": None,
+                    "sw_version": None,
+                    "via_device_id": None,
+                },
+            ],
+            "deleted_devices": [],
+        },
+    }
+
+    await dr.async_load(hass)
+    registry = dr.async_get(hass)
+
+    # Test data was loaded
+    entry = registry.async_get_or_create(
+        config_entry_id=mock_config_entry.entry_id,
+        connections={("Zigbee", "01.23.45.67.89")},
+        identifiers={("serial", "123456ABCDEF")},
+    )
+    assert entry.id == "abcdefghijklm"
+
+    # Update to trigger a store
+    entry = registry.async_get_or_create(
+        config_entry_id=mock_config_entry.entry_id,
+        connections={("Zigbee", "01.23.45.67.89")},
+        identifiers={("serial", "123456ABCDEF")},
+        sw_version="new_version",
+    )
+    assert entry.id == "abcdefghijklm"
+
+    # Check we store migrated data
+    await flush_store(registry._store)
+
+    assert hass_storage[dr.STORAGE_KEY] == {
+        "version": dr.STORAGE_VERSION_MAJOR,
+        "minor_version": dr.STORAGE_VERSION_MINOR,
+        "key": dr.STORAGE_KEY,
+        "data": {
+            "devices": [
+                {
+                    "area_id": None,
+                    "config_entries": [mock_config_entry.entry_id],
+                    "configuration_url": None,
+                    "connections": [["Zigbee", "01.23.45.67.89"]],
+                    "disabled_by": None,
+                    "entry_type": "service",
+                    "hw_version": "hw_version",
+                    "id": "abcdefghijklm",
+                    "identifiers": [["serial", "123456ABCDEF"]],
+                    "labels": [],
+                    "manufacturer": "manufacturer",
+                    "model": "model",
+                    "name": "name",
+                    "name_by_user": None,
+                    "serial_number": None,
+                    "sw_version": "new_version",
+                    "via_device_id": None,
+                },
+                {
+                    "area_id": None,
+                    "config_entries": [None],
+                    "configuration_url": None,
+                    "connections": [],
+                    "disabled_by": None,
+                    "entry_type": None,
+                    "hw_version": None,
+                    "id": "invalid-entry-type",
+                    "identifiers": [["serial", "mock-id-invalid-entry"]],
+                    "labels": [],
                     "manufacturer": None,
                     "model": None,
                     "name_by_user": None,
@@ -1002,7 +1137,10 @@ async def test_loading_saving_data(
     assert len(device_registry.deleted_devices) == 1
 
     orig_via = device_registry.async_update_device(
-        orig_via.id, area_id="mock-area-id", name_by_user="mock-name-by-user"
+        orig_via.id,
+        area_id="mock-area-id",
+        name_by_user="mock-name-by-user",
+        labels={"mock-label1", "mock-label2"},
     )
 
     # Now load written data in new registry
@@ -1110,6 +1248,7 @@ async def test_update(
     )
     new_identifiers = {("hue", "654"), ("bla", "321")}
     assert not entry.area_id
+    assert not entry.labels
     assert not entry.name_by_user
 
     with patch.object(device_registry, "async_schedule_save") as mock_save:
@@ -1120,6 +1259,7 @@ async def test_update(
             disabled_by=dr.DeviceEntryDisabler.USER,
             entry_type=dr.DeviceEntryType.SERVICE,
             hw_version="hw_version",
+            labels={"label1", "label2"},
             manufacturer="Test Producer",
             model="Test Model",
             name_by_user="Test Friendly Name",
@@ -1143,6 +1283,7 @@ async def test_update(
         hw_version="hw_version",
         id=entry.id,
         identifiers={("bla", "321"), ("hue", "654")},
+        labels={"label1", "label2"},
         manufacturer="Test Producer",
         model="Test Model",
         name_by_user="Test Friendly Name",
@@ -1187,6 +1328,7 @@ async def test_update(
         "entry_type": None,
         "hw_version": None,
         "identifiers": {("bla", "123"), ("hue", "456")},
+        "labels": set(),
         "manufacturer": None,
         "model": None,
         "name": None,
@@ -1989,6 +2131,7 @@ async def test_loading_invalid_configuration_url_from_storage(
                     "hw_version": None,
                     "id": "abcdefghijklm",
                     "identifiers": [["serial", "123456ABCDEF"]],
+                    "labels": [],
                     "manufacturer": None,
                     "model": None,
                     "name_by_user": None,
@@ -2010,3 +2153,87 @@ async def test_loading_invalid_configuration_url_from_storage(
         identifiers={("serial", "123456ABCDEF")},
     )
     assert entry.configuration_url == "invalid"
+
+
+async def test_removing_labels(
+    hass: HomeAssistant, device_registry: dr.DeviceRegistry
+) -> None:
+    """Make sure we can clear labels."""
+    config_entry = MockConfigEntry()
+    config_entry.add_to_hass(hass)
+    entry = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        connections={(dr.CONNECTION_NETWORK_MAC, "12:34:56:AB:CD:EF")},
+        identifiers={("bridgeid", "0123")},
+        manufacturer="manufacturer",
+        model="model",
+    )
+    entry = device_registry.async_update_device(entry.id, labels={"label1", "label2"})
+
+    device_registry.async_clear_label_id("label1")
+    entry_cleared_label1 = device_registry.async_get_device({("bridgeid", "0123")})
+
+    device_registry.async_clear_label_id("label2")
+    entry_cleared_label2 = device_registry.async_get_device({("bridgeid", "0123")})
+
+    assert entry_cleared_label1
+    assert entry_cleared_label2
+    assert entry != entry_cleared_label1
+    assert entry != entry_cleared_label2
+    assert entry_cleared_label1 != entry_cleared_label2
+    assert entry.labels == {"label1", "label2"}
+    assert entry_cleared_label1.labels == {"label2"}
+    assert not entry_cleared_label2.labels
+
+
+async def test_entries_for_label(
+    hass: HomeAssistant, device_registry: dr.DeviceRegistry
+) -> None:
+    """Test getting device entries by label."""
+    config_entry = MockConfigEntry()
+    config_entry.add_to_hass(hass)
+
+    device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        connections={(dr.CONNECTION_NETWORK_MAC, "12:34:56:AB:CD:00")},
+        identifiers={("bridgeid", "0000")},
+        manufacturer="manufacturer",
+        model="model",
+    )
+    entry_1 = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        connections={(dr.CONNECTION_NETWORK_MAC, "12:34:56:AB:CD:23")},
+        identifiers={("bridgeid", "0123")},
+        manufacturer="manufacturer",
+        model="model",
+    )
+    entry_1 = device_registry.async_update_device(entry_1.id, labels={"label1"})
+    entry_2 = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        connections={(dr.CONNECTION_NETWORK_MAC, "12:34:56:AB:CD:56")},
+        identifiers={("bridgeid", "0456")},
+        manufacturer="manufacturer",
+        model="model",
+    )
+    entry_2 = device_registry.async_update_device(entry_2.id, labels={"label2"})
+    entry_1_and_2 = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        connections={(dr.CONNECTION_NETWORK_MAC, "12:34:56:AB:CD:89")},
+        identifiers={("bridgeid", "0789")},
+        manufacturer="manufacturer",
+        model="model",
+    )
+    entry_1_and_2 = device_registry.async_update_device(
+        entry_1_and_2.id, labels={"label1", "label2"}
+    )
+
+    entries = dr.async_entries_for_label(device_registry, "label1")
+    assert len(entries) == 2
+    assert entries == [entry_1, entry_1_and_2]
+
+    entries = dr.async_entries_for_label(device_registry, "label2")
+    assert len(entries) == 2
+    assert entries == [entry_2, entry_1_and_2]
+
+    assert not dr.async_entries_for_label(device_registry, "unknown")
+    assert not dr.async_entries_for_label(device_registry, "")
