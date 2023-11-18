@@ -83,14 +83,13 @@ class TimeDateSensor(SensorEntity):
     """Implementation of a Time and Date sensor."""
 
     _attr_has_entity_name = True
+    _state: str | None = None
+    unsub: Callable[[], None] | None = None
 
     def __init__(self, option_type: str, entry_id: str) -> None:
         """Initialize the sensor."""
         self._attr_translation_key = option_type
         self.type = option_type
-        self._state: str | None = None
-        self.unsub: Callable[[], None] | None = None
-
         self.entity_id = ENTITY_ID_FORMAT.format(option_type)
         self._attr_unique_id = f"{option_type}_{entry_id}"
         self._attr_device_info = DeviceInfo(
