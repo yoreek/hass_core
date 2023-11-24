@@ -32,7 +32,6 @@
         "date_time_utc": "Date & Time (UTC)",
         "date_time_iso": "Date & Time (ISO)",
         "time_date": "Time & Date",
-        "beat": "Internet time",
         "time_utc": "Time (UTC)"
       }
     }
@@ -56,9 +55,6 @@
       },
       "time_date": {
         "name": "[%key:component::time_date::selector::display_options::options::time_date%]"
-      },
-      "beat": {
-        "name": "[%key:component::time_date::selector::display_options::options::beat%]"
       },
       "time_utc": {
         "name": "[%key:component::time_date::selector::display_options::options::time_utc%]"

@@ -134,13 +134,8 @@ class TimeDateSensor(SensorEntity):
             tomorrow = dt_util.as_local(now) + timedelta(days=1)
             return dt_util.start_of_local_day(tomorrow)
 
-        if self.type == "beat":
-            # Add 1 hour because @0 beats is at 23:00:00 UTC.
-            timestamp = dt_util.as_timestamp(now + timedelta(hours=1))
-            interval = 86.4
-        else:
-            timestamp = dt_util.as_timestamp(now)
-            interval = 60
+        timestamp = dt_util.as_timestamp(now)
+        interval = 60
 
         delta = interval - (timestamp % interval)
         next_interval = now + timedelta(seconds=delta)
@@ -166,21 +161,6 @@ class TimeDateSensor(SensorEntity):
             self._state = f"{time}, {date}"
         elif self.type == "time_utc":
             self._state = time_utc
-        elif self.type == "beat":
-            # Calculate Swatch Internet Time.
-            time_bmt = time_date + timedelta(hours=1)
-            delta = timedelta(
-                hours=time_bmt.hour,
-                minutes=time_bmt.minute,
-                seconds=time_bmt.second,
-                microseconds=time_bmt.microsecond,
-            )
-
-            # Use integers to better handle rounding. For example,
-            # int(63763.2/86.4) = 737 but 637632//864 = 738.
-            beat = int(delta.total_seconds() * 10) // 864
-
-            self._state = f"@{beat:03d}"
         elif self.type == "date_time_iso" and (
             _datetime := dt_util.parse_datetime(f"{date} {time}")
         ):
