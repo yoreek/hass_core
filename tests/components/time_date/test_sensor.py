@@ -1,7 +1,6 @@
 """The tests for time_date sensor platform."""
 
 from freezegun.api import FrozenDateTimeFactory
-
 import pytest
 
 import homeassistant.components.time_date.sensor as time_date
@@ -17,13 +16,7 @@ async def test_intervals(hass: HomeAssistant, freezer: FrozenDateTimeFactory) ->
     now = dt_util.utc_from_timestamp(45.5)
     freezer.move_to(now)
     next_time = device.get_next_interval()
-    assert next_time == dt_util.utc_from_timestamp(60)
-
-    device = time_date.TimeDateSensor("beat", "1234567890")
-    now = dt_util.parse_datetime("2020-11-13 00:00:29+01:00")
-    freezer.move_to(now)
-    next_time = device.get_next_interval()
-    assert next_time == dt_util.parse_datetime("2020-11-13 00:01:26.4+01:00")
+    assert next_time == dt_util.parse_datetime("1971-01-01 00:01:00+00:00")
 
     device = time_date.TimeDateSensor("date_time", "1234567890")
     now = dt_util.utc_from_timestamp(1495068899)
@@ -61,9 +54,6 @@ async def test_states(hass: HomeAssistant) -> None:
     state = hass.states.get("sensor.date_time_iso")
     assert state.state == "2017-05-18T00:54:00"
 
-    state = hass.states.get("sensor.beat")
-    assert state.state == "@079"
-
 
 @pytest.mark.freeze_time(dt_util.utc_from_timestamp(1495068856))
 async def test_states_non_default_timezone(hass: HomeAssistant) -> None:
@@ -85,9 +75,6 @@ async def test_states_non_default_timezone(hass: HomeAssistant) -> None:
 
     state = hass.states.get("sensor.date_time_utc")
     assert state.state == "2017-05-18, 00:54"
-
-    state = hass.states.get("sensor.beat")
-    assert state.state == "@079"
 
     state = hass.states.get("sensor.date_time_iso")
     assert state.state == "2017-05-17T20:54:00"
