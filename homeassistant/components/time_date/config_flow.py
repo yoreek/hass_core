@@ -43,8 +43,10 @@ async def validate_input(
     hass = async_get_hass()
     if hass.config.time_zone is None:
         raise SchemaFlowError("timezone_not_exist")
-    if user_input.get("beat"):
-        user_input.pop("beat")
+
+    if "beat" in user_input["display_options"]:
+        options = [opt for opt in user_input["display_options"] if opt != "beat"]
+        user_input["display_options"] = options
     return user_input
 
 

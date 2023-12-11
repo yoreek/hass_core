@@ -69,6 +69,21 @@ async def test_import_flow_success(hass: HomeAssistant) -> None:
     assert result["options"] == {"display_options": ["time", "date"]}
 
 
+async def test_import_flow_removes_beat(hass: HomeAssistant) -> None:
+    """Test we remove beat with import."""
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={"source": config_entries.SOURCE_IMPORT},
+        data={CONF_DISPLAY_OPTIONS: ["time", "date", "beat"]},
+    )
+    await hass.async_block_till_done()
+
+    assert result["type"] == FlowResultType.CREATE_ENTRY
+    assert result["title"] == "Time & Date"
+    assert result["options"] == {"display_options": ["time", "date"]}
+
+
 async def test_import_flow_already_exist(hass: HomeAssistant) -> None:
     """Test import of yaml already exist."""
 
