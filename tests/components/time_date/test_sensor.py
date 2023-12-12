@@ -16,7 +16,7 @@ async def test_intervals(hass: HomeAssistant, freezer: FrozenDateTimeFactory) ->
     now = dt_util.utc_from_timestamp(45.5)
     freezer.move_to(now)
     next_time = device.get_next_interval()
-    assert next_time == dt_util.parse_datetime("1971-01-01 00:01:00+00:00")
+    assert next_time == dt_util.parse_datetime("1970-01-01 00:01:00+00:00")
 
     device = time_date.TimeDateSensor("date_time", "1234567890")
     now = dt_util.utc_from_timestamp(1495068899)
