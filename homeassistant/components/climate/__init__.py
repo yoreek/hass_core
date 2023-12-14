@@ -19,7 +19,8 @@ from homeassistant.const import (
     STATE_ON,
     UnitOfTemperature,
 )
-from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.core import HomeAssistant, ServiceCall, callback
+from homeassistant.exceptions import ServiceValidationError
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.config_validation import (  # noqa: F401
     PLATFORM_SCHEMA,
@@ -148,7 +149,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     component.async_register_entity_service(
         SERVICE_SET_PRESET_MODE,
         {vol.Required(ATTR_PRESET_MODE): cv.string},
-        "async_set_preset_mode",
+        "async_handle_set_preset_mode_service",
         [ClimateEntityFeature.PRESET_MODE],
     )
     component.async_register_entity_service(
@@ -175,13 +176,13 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     component.async_register_entity_service(
         SERVICE_SET_FAN_MODE,
         {vol.Required(ATTR_FAN_MODE): cv.string},
-        "async_set_fan_mode",
+        "async_handle_set_fan_mode_service",
         [ClimateEntityFeature.FAN_MODE],
     )
     component.async_register_entity_service(
         SERVICE_SET_SWING_MODE,
         {vol.Required(ATTR_SWING_MODE): cv.string},
-        "async_set_swing_mode",
+        "async_handle_set_swing_mode_service",
         [ClimateEntityFeature.SWING_MODE],
     )
 
@@ -471,6 +472,24 @@ class ClimateEntity(Entity):
         """
         return self._attr_swing_modes
 
+    @final
+    @callback
+    def _valid_mode_or_raise(self, mode_type: str, mode: str, modes: list[str]) -> None:
+        """Raise ServiceValidationError on invalid modes."""
+        if not modes or mode not in modes:
+            modes_str: str = ", ".join(modes or [])
+            raise ServiceValidationError(
+                f"The {mode_type}_mode {mode} is not a valid {mode_type}_mode:"
+                f" {', '.join(modes)}",
+                translation_domain=DOMAIN,
+                translation_key="not_valid_mode",
+                translation_placeholders={
+                    "mode_type": mode_type.title(),
+                    "mode": mode,
+                    "modes": modes_str,
+                },
+            )
+
     def set_temperature(self, **kwargs: Any) -> None:
         """Set new target temperature."""
         raise NotImplementedError()
@@ -489,6 +508,13 @@ class ClimateEntity(Entity):
         """Set new target humidity."""
         await self.hass.async_add_executor_job(self.set_humidity, humidity)
 
+    @final
+    async def async_handle_set_fan_mode_service(self, fan_mode: str) -> None:
+        """Validate and set new preset mode."""
+        if self.fan_modes:
+            self._valid_mode_or_raise("fan", fan_mode, self.fan_modes)
+            await self.async_set_fan_mode(fan_mode)
+
     def set_fan_mode(self, fan_mode: str) -> None:
         """Set new target fan mode."""
         raise NotImplementedError()
@@ -505,6 +531,13 @@ class ClimateEntity(Entity):
         """Set new target hvac mode."""
         await self.hass.async_add_executor_job(self.set_hvac_mode, hvac_mode)
 
+    @final
+    async def async_handle_set_swing_mode_service(self, swing_mode: str) -> None:
+        """Validate and set new preset mode."""
+        if self.swing_modes:
+            self._valid_mode_or_raise("swing", swing_mode, self.swing_modes)
+            await self.async_set_swing_mode(swing_mode)
+
     def set_swing_mode(self, swing_mode: str) -> None:
         """Set new target swing operation."""
         raise NotImplementedError()
@@ -512,6 +545,13 @@ class ClimateEntity(Entity):
     async def async_set_swing_mode(self, swing_mode: str) -> None:
         """Set new target swing operation."""
         await self.hass.async_add_executor_job(self.set_swing_mode, swing_mode)
+
+    @final
+    async def async_handle_set_preset_mode_service(self, preset_mode: str) -> None:
+        """Validate and set new preset mode."""
+        if self.preset_modes:
+            self._valid_mode_or_raise("preset", preset_mode, self.preset_modes)
+            await self.async_set_preset_mode(preset_mode)
 
     def set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
