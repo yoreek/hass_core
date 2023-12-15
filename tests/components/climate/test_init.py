@@ -235,7 +235,7 @@ async def test_preset_mode_validation(
         str(exc.value)
         == "The preset_mode invalid is not a valid preset_mode: home, away"
     )
-    assert exc.value.translation_key == "not_valid_mode"
+    assert exc.value.translation_key == "not_valid_preset_mode"
 
     with pytest.raises(ServiceValidationError) as exc:
         await hass.services.async_call(
@@ -250,7 +250,7 @@ async def test_preset_mode_validation(
     assert (
         str(exc.value) == "The swing_mode invalid is not a valid swing_mode: auto, off"
     )
-    assert exc.value.translation_key == "not_valid_mode"
+    assert exc.value.translation_key == "not_valid_swing_mode"
 
     with pytest.raises(ServiceValidationError) as exc:
         await hass.services.async_call(
@@ -263,4 +263,4 @@ async def test_preset_mode_validation(
             blocking=True,
         )
     assert str(exc.value) == "The fan_mode invalid is not a valid fan_mode: auto, off"
-    assert exc.value.translation_key == "not_valid_mode"
+    assert exc.value.translation_key == "not_valid_fan_mode"
