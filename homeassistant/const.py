@@ -51,6 +51,7 @@ class Platform(StrEnum):
     DATE = "date"
     DATETIME = "datetime"
     DEVICE_TRACKER = "device_tracker"
+    DURATION = "duration"
     EVENT = "event"
     FAN = "fan"
     GEO_LOCATION = "geo_location"

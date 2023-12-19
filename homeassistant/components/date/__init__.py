@@ -32,7 +32,13 @@ __all__ = ["DOMAIN", "DateEntity", "DateEntityDescription"]
 
 async def _async_set_value(entity: DateEntity, service_call: ServiceCall) -> None:
     """Service call wrapper to set a new date."""
-    return await entity.async_set_value(service_call.data[ATTR_DATE])
+    return await entity.async_set_native_value(service_call.data[ATTR_DATE])
+
+
+async def async_set_value(entity: DateEntity, service_call: ServiceCall) -> None:
+    """Service call wrapper to set a new value."""
+    value = service_call.data["value"]
+    await entity.async_set_native_value(value)
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
@@ -73,7 +79,7 @@ class DateEntity(Entity, cached_properties=CACHED_PROPERTIES_WITH_ATTR_):
 
     entity_description: DateEntityDescription
     _attr_device_class: None
-    _attr_native_value: date | None
+    _attr_native_value: date | None = None
     _attr_state: None = None
 
     @cached_property
@@ -100,6 +106,14 @@ class DateEntity(Entity, cached_properties=CACHED_PROPERTIES_WITH_ATTR_):
     def native_value(self) -> date | None:
         """Return the value reported by the date."""
         return self._attr_native_value
+
+    def set_native_value(self, value: date) -> None:
+        """Set new value."""
+        raise NotImplementedError
+
+    async def async_set_native_value(self, value: date) -> None:
+        """Set new value."""
+        await self.hass.async_add_executor_job(self.set_native_value, value)
 
     def set_value(self, value: date) -> None:
         """Change the date."""

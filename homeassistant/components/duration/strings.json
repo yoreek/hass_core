@@ -1,0 +1,20 @@
+{
+  "title": "Duration",
+  "entity_component": {
+    "_": {
+      "name": "[%key:component::duration::title%]"
+    }
+  },
+  "services": {
+    "set_value": {
+      "name": "Set Duration",
+      "description": "Sets the duration.",
+      "fields": {
+        "duration": {
+          "name": "Duration",
+          "description": "The duration to set."
+        }
+      }
+    }
+  }
+}

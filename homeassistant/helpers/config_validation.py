@@ -820,6 +820,22 @@ def datetime(value: Any) -> datetime_sys:
     return date_val
 
 
+def duration(value: Any) -> timedelta:
+    """Validate duration."""
+    if isinstance(value, timedelta):
+        return value
+
+    try:
+        timedelta_val = dt_util.parse_duration(value)
+    except TypeError:
+        timedelta_val = None
+
+    if timedelta_val is None:
+        raise vol.Invalid(f"Invalid duration specified: {value}")
+
+    return timedelta_val
+
+
 def time_zone(value: str) -> str:
     """Validate timezone."""
     if dt_util.get_time_zone(value) is not None:
