@@ -33,7 +33,13 @@ __all__ = ["DOMAIN", "TimeEntity", "TimeEntityDescription"]
 
 async def _async_set_value(entity: TimeEntity, service_call: ServiceCall) -> None:
     """Service call wrapper to set a new date."""
-    return await entity.async_set_value(service_call.data[ATTR_TIME])
+    return await entity.async_set_native_value(service_call.data[ATTR_TIME])
+
+
+async def async_set_value(entity: TimeEntity, service_call: ServiceCall) -> None:
+    """Service call wrapper to set a new value."""
+    value = service_call.data["value"]
+    await entity.async_set_native_value(value)
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
@@ -71,7 +77,7 @@ class TimeEntity(Entity):
     """Representation of a Time entity."""
 
     entity_description: TimeEntityDescription
-    _attr_native_value: time | None
+    _attr_native_value: time | None = None
     _attr_device_class: None = None
     _attr_state: None = None
 
@@ -99,6 +105,14 @@ class TimeEntity(Entity):
     def native_value(self) -> time | None:
         """Return the value reported by the time."""
         return self._attr_native_value
+
+    def set_native_value(self, value: time) -> None:
+        """Set new value."""
+        raise NotImplementedError()
+
+    async def async_set_native_value(self, value: time) -> None:
+        """Set new value."""
+        await self.hass.async_add_executor_job(self.set_native_value, value)
 
     def set_value(self, value: time) -> None:
         """Change the time."""
