@@ -7,6 +7,7 @@ import asyncio
 from collections import deque
 from collections.abc import Callable
 from dataclasses import dataclass, field
+import datetime as dt
 from enum import StrEnum
 import logging
 from typing import TYPE_CHECKING, Any, TypedDict
@@ -48,7 +49,9 @@ _LOGGER = logging.getLogger(__name__)
 
 ATTR_THIS = "this"
 
-type PublishPayloadType = str | bytes | int | float | None
+type PublishPayloadType = (
+    str | bytes | int | float | dt.date | dt.datetime | dt.time | dt.timedelta | None
+)
 
 
 def convert_outgoing_mqtt_payload(
