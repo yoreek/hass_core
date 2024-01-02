@@ -7,7 +7,12 @@ import logging
 
 import voluptuous as vol
 
-from homeassistant.components.datetime import DOMAIN, ENTITY_ID_FORMAT, DateTimeEntity
+from homeassistant.components.datetime import (
+    ATTR_ENABLE_SECOND,
+    DOMAIN,
+    ENTITY_ID_FORMAT,
+    DateTimeEntity,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_DEVICE_CLASS,
@@ -51,6 +56,14 @@ _LOGGER = logging.getLogger(__name__)
 
 DEFAULT_NAME = "MQTT Datetime"
 DEFAULT_PAYLOAD_RESET = "None"
+DEFAULT_ENABLE_SECOND = False
+CONF_ENABLE_SECOND = "enable_second"
+
+MQTT_NUMBER_ATTRIBUTES_BLOCKED = frozenset(
+    {
+        ATTR_ENABLE_SECOND,
+    }
+)
 
 
 _PLATFORM_SCHEMA_BASE = MQTT_RW_SCHEMA.extend(
@@ -59,6 +72,9 @@ _PLATFORM_SCHEMA_BASE = MQTT_RW_SCHEMA.extend(
         vol.Optional(CONF_NAME): vol.Any(cv.string, None),
         vol.Optional(CONF_PAYLOAD_RESET, default=DEFAULT_PAYLOAD_RESET): cv.string,
         vol.Optional(CONF_VALUE_TEMPLATE): cv.template,
+        vol.Optional(CONF_ENABLE_SECOND, default=DEFAULT_ENABLE_SECOND): vol.Coerce(
+            bool
+        ),
     },
 ).extend(MQTT_ENTITY_COMMON_SCHEMA.schema)
 
@@ -93,6 +109,7 @@ class MqttDatetime(MqttEntity, DateTimeEntity):
 
     _default_name = DEFAULT_NAME
     _entity_id_format = ENTITY_ID_FORMAT
+    _attributes_extra_blocked = MQTT_NUMBER_ATTRIBUTES_BLOCKED
 
     _optimistic: bool
     _command_template: Callable[[PublishPayloadType], PublishPayloadType]
@@ -117,6 +134,7 @@ class MqttDatetime(MqttEntity, DateTimeEntity):
         ).async_render_with_possible_json_value
 
         self._attr_device_class = config.get(CONF_DEVICE_CLASS)
+        self._attr_enable_second_value = config[CONF_ENABLE_SECOND]
 
     def _prepare_subscribe_topics(self) -> None:
         """(Re)Subscribe to topics."""

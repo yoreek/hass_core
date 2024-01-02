@@ -4,7 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import time, timedelta
 import logging
-from typing import final
+from typing import Any, final
 
 import voluptuous as vol
 
@@ -20,7 +20,12 @@ from homeassistant.helpers.entity import Entity, EntityDescription
 from homeassistant.helpers.entity_component import EntityComponent
 from homeassistant.helpers.typing import ConfigType
 
-from .const import DOMAIN, SERVICE_SET_VALUE
+from .const import (
+    ATTR_ENABLE_SECOND,
+    DEFAULT_ENABLE_SECOND_VALUE,
+    DOMAIN,
+    SERVICE_SET_VALUE,
+)
 
 SCAN_INTERVAL = timedelta(seconds=30)
 
@@ -28,7 +33,13 @@ ENTITY_ID_FORMAT = DOMAIN + ".{}"
 
 _LOGGER = logging.getLogger(__name__)
 
-__all__ = ["DOMAIN", "TimeEntity", "TimeEntityDescription"]
+__all__ = [
+    "ATTR_ENABLE_SECOND",
+    "DEFAULT_EMABLE_SECOND_VALUE",
+    "DOMAIN",
+    "TimeEntity",
+    "TimeEntityDescription",
+]
 
 
 async def _async_set_value(entity: TimeEntity, service_call: ServiceCall) -> None:
@@ -76,7 +87,10 @@ class TimeEntityDescription(EntityDescription):
 class TimeEntity(Entity):
     """Representation of a Time entity."""
 
+    _entity_component_unrecorded_attributes = frozenset({ATTR_ENABLE_SECOND})
+
     entity_description: TimeEntityDescription
+    _attr_enable_second_value: bool | None = None
     _attr_native_value: time | None = None
     _attr_device_class: None = None
     _attr_state: None = None
@@ -121,3 +135,18 @@ class TimeEntity(Entity):
     async def async_set_value(self, value: time) -> None:
         """Change the time."""
         await self.hass.async_add_executor_job(self.set_value, value)
+
+    @property
+    @final
+    def enable_second_value(self) -> bool:
+        """Return the enable second value."""
+        if hasattr(self, "_attr_enable_second_value"):
+            return self._attr_enable_second_value
+        return DEFAULT_ENABLE_SECOND_VALUE
+
+    @property
+    def capability_attributes(self) -> dict[str, Any]:
+        """Return capability attributes."""
+        return {
+            ATTR_ENABLE_SECOND: self.enable_second_value,
+        }

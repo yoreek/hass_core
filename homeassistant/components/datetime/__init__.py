@@ -4,7 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 import logging
-from typing import final
+from typing import Any, final
 
 import voluptuous as vol
 
@@ -20,7 +20,13 @@ from homeassistant.helpers.entity_component import EntityComponent
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.util import dt as dt_util
 
-from .const import ATTR_DATETIME, DOMAIN, SERVICE_SET_VALUE
+from .const import (
+    ATTR_DATETIME,
+    ATTR_ENABLE_SECOND,
+    DEFAULT_ENABLE_SECOND_VALUE,
+    DOMAIN,
+    SERVICE_SET_VALUE,
+)
 
 SCAN_INTERVAL = timedelta(seconds=30)
 
@@ -28,7 +34,13 @@ ENTITY_ID_FORMAT = DOMAIN + ".{}"
 
 _LOGGER = logging.getLogger(__name__)
 
-__all__ = ["ATTR_DATETIME", "DOMAIN", "DateTimeEntity", "DateTimeEntityDescription"]
+__all__ = [
+    "ATTR_DATETIME",
+    "ATTR_ENABLE_SECOND",
+    "DOMAIN",
+    "DateTimeEntity",
+    "DateTimeEntityDescription",
+]
 
 
 async def _async_set_value(entity: DateTimeEntity, service_call: ServiceCall) -> None:
@@ -85,7 +97,10 @@ class DateTimeEntityDescription(EntityDescription):
 class DateTimeEntity(Entity):
     """Representation of a Date/time entity."""
 
+    _entity_component_unrecorded_attributes = frozenset({ATTR_ENABLE_SECOND})
+
     entity_description: DateTimeEntityDescription
+    _attr_enable_second_value: bool | None = None
     _attr_device_class: None = None
     _attr_state: None = None
     _attr_native_value: datetime | None = None
@@ -136,3 +151,18 @@ class DateTimeEntity(Entity):
     async def async_set_value(self, value: datetime) -> None:
         """Change the date/time."""
         await self.hass.async_add_executor_job(self.set_value, value)
+
+    @property
+    @final
+    def enable_second_value(self) -> bool:
+        """Return the enable second value."""
+        if hasattr(self, "_attr_enable_second_value"):
+            return self._attr_enable_second_value
+        return DEFAULT_ENABLE_SECOND_VALUE
+
+    @property
+    def capability_attributes(self) -> dict[str, Any]:
+        """Return capability attributes."""
+        return {
+            ATTR_ENABLE_SECOND: self.enable_second_value,
+        }
