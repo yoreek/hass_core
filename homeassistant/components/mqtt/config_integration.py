@@ -39,6 +39,7 @@ CONFIG_SCHEMA_BASE = vol.Schema(
         Platform.DATE.value: vol.All(cv.ensure_list, [dict]),
         Platform.DATETIME.value: vol.All(cv.ensure_list, [dict]),
         Platform.DEVICE_TRACKER.value: vol.All(cv.ensure_list, [dict]),
+        Platform.DURATION.value: vol.All(cv.ensure_list, [dict]),
         Platform.EVENT.value: vol.All(cv.ensure_list, [dict]),
         Platform.FAN.value: vol.All(cv.ensure_list, [dict]),
         Platform.HUMIDIFIER.value: vol.All(cv.ensure_list, [dict]),

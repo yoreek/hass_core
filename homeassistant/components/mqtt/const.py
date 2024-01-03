@@ -131,6 +131,7 @@ PLATFORMS = [
     Platform.DATE,
     Platform.DATETIME,
     Platform.DEVICE_TRACKER,
+    Platform.DURATION,
     Platform.EVENT,
     Platform.COVER,
     Platform.FAN,

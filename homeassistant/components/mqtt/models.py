@@ -41,7 +41,9 @@ _LOGGER = logging.getLogger(__name__)
 
 ATTR_THIS = "this"
 
-PublishPayloadType = str | bytes | int | float | dt.date | dt.datetime | dt.time | None
+PublishPayloadType = (
+    str | bytes | int | float | dt.date | dt.datetime | dt.time | dt.timedelta | None
+)
 
 
 @dataclass

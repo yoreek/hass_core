@@ -59,6 +59,7 @@ SUPPORTED_COMPONENTS = {
     "datetime",
     "device_automation",
     "device_tracker",
+    "duration",
     "event",
     "fan",
     "humidifier",
