@@ -3,7 +3,7 @@ requires = ["setuptools==68.0.0", "wheel~=0.40.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name        = "homeassistant"
+name        = "yoreek-homeassistant"
 version     = "2023.12.3"
 license     = {text = "Apache-2.0"}
 description = "Open-source home automation platform running on Python 3."
@@ -445,7 +445,7 @@ filterwarnings = [
     "ignore:ssl.TLSVersion.SSLv3 is deprecated:DeprecationWarning:regenmaschine.client",
 
     # -- Setuptools DeprecationWarnings
-    # https://github.com/googleapis/google-cloud-python/issues/11184
+    # https://github.com/googleapis/google-clscroud-python/issues/11184
     # https://github.com/zopefoundation/meta/issues/194
     "ignore:Deprecated call to `pkg_resources.declare_namespace\\(('google.*'|'pywinusb'|'repoze'|'xbox'|'zope')\\)`:DeprecationWarning:pkg_resources",
     "ignore:Deprecated call to `pkg_resources.declare_namespace\\('google.*'\\)`:DeprecationWarning:google.rpc",
