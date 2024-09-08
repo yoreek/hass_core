@@ -8,13 +8,7 @@ import logging
 
 import voluptuous as vol
 
-from homeassistant.components.duration import (
-    ATTR_ENABLE_DAY,
-    ATTR_ENABLE_MILLISECOND,
-    DOMAIN,
-    ENTITY_ID_FORMAT,
-    DurationEntity,
-)
+from homeassistant.components import duration
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_DEVICE_CLASS,
@@ -24,7 +18,7 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import config_validation as cv
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.service_info.mqtt import ReceivePayloadType
 from homeassistant.helpers.typing import ConfigType, VolSchemaType
 from homeassistant.util import dt as dt_util
@@ -37,7 +31,7 @@ from .const import (
     CONF_PAYLOAD_RESET,
     CONF_STATE_TOPIC,
 )
-from .mixins import MqttEntity, async_setup_entity_entry_helper
+from .entity import MqttEntity, async_setup_entity_entry_helper
 from .models import (
     MqttCommandTemplate,
     MqttValueTemplate,
@@ -48,6 +42,8 @@ from .schemas import MQTT_ENTITY_COMMON_SCHEMA
 
 _LOGGER = logging.getLogger(__name__)
 
+PARALLEL_UPDATES = 0
+
 DEFAULT_NAME = "MQTT Duration"
 DEFAULT_PAYLOAD_RESET = "None"
 DEFAULT_ENABLE_DAY = False
@@ -57,8 +53,8 @@ CONF_ENABLE_MILLISECOND = "enable_millisecond"
 
 MQTT_NUMBER_ATTRIBUTES_BLOCKED = frozenset(
     {
-        ATTR_ENABLE_DAY,
-        ATTR_ENABLE_MILLISECOND,
+        duration.ATTR_ENABLE_DAY,
+        duration.ATTR_ENABLE_MILLISECOND,
     }
 )
 
@@ -88,25 +84,25 @@ DISCOVERY_SCHEMA = vol.All(
 async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up MQTT datetime through YAML and through MQTT discovery."""
     async_setup_entity_entry_helper(
         hass,
         config_entry,
         MqttDatetime,
-        DOMAIN,
+        duration.DOMAIN,
         async_add_entities,
         DISCOVERY_SCHEMA,
         PLATFORM_SCHEMA_MODERN,
     )
 
 
-class MqttDatetime(MqttEntity, DurationEntity):
+class MqttDatetime(MqttEntity, duration.DurationEntity):
     """representation of an MQTT duration."""
 
     _default_name = DEFAULT_NAME
-    _entity_id_format = ENTITY_ID_FORMAT
+    _entity_id_format = duration.ENTITY_ID_FORMAT
     _attributes_extra_blocked = MQTT_NUMBER_ATTRIBUTES_BLOCKED
 
     _optimistic: bool

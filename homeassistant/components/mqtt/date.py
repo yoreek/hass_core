@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from datetime import date
+import datetime
 import logging
 
 import voluptuous as vol
 
-from homeassistant.components.date import DOMAIN, ENTITY_ID_FORMAT, DateEntity
+from homeassistant.components import date
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_DEVICE_CLASS,
@@ -18,7 +18,7 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import config_validation as cv
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.service_info.mqtt import ReceivePayloadType
 from homeassistant.helpers.typing import ConfigType, VolSchemaType
 from homeassistant.util import dt as dt_util
@@ -31,7 +31,7 @@ from .const import (
     CONF_PAYLOAD_RESET,
     CONF_STATE_TOPIC,
 )
-from .mixins import MqttEntity, async_setup_entity_entry_helper
+from .entity import MqttEntity, async_setup_entity_entry_helper
 from .models import (
     MqttCommandTemplate,
     MqttValueTemplate,
@@ -41,6 +41,8 @@ from .models import (
 from .schemas import MQTT_ENTITY_COMMON_SCHEMA
 
 _LOGGER = logging.getLogger(__name__)
+
+PARALLEL_UPDATES = 0
 
 DEFAULT_NAME = "MQTT Date"
 DEFAULT_PAYLOAD_RESET = "None"
@@ -67,25 +69,25 @@ DISCOVERY_SCHEMA = vol.All(
 async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up MQTT date through YAML and through MQTT discovery."""
     async_setup_entity_entry_helper(
         hass,
         config_entry,
         MqttDate,
-        DOMAIN,
+        date.DOMAIN,
         async_add_entities,
         DISCOVERY_SCHEMA,
         PLATFORM_SCHEMA_MODERN,
     )
 
 
-class MqttDate(MqttEntity, DateEntity):
+class MqttDate(MqttEntity, date.DateEntity):
     """representation of an MQTT date."""
 
     _default_name = DEFAULT_NAME
-    _entity_id_format = ENTITY_ID_FORMAT
+    _entity_id_format = date.ENTITY_ID_FORMAT
 
     _optimistic: bool
     _command_template: Callable[[PublishPayloadType], PublishPayloadType]
@@ -114,7 +116,7 @@ class MqttDate(MqttEntity, DateEntity):
     @callback
     def _message_received(self, msg: ReceiveMessage) -> None:
         """Handle new MQTT messages."""
-        date_value: date | None
+        date_value: datetime.date | None
         payload = str(self._value_template(msg.payload))
         if not payload.strip():
             _LOGGER.debug("Ignoring empty state update from '%s'", msg.topic)
@@ -144,7 +146,7 @@ class MqttDate(MqttEntity, DateEntity):
         """(Re)Subscribe to topics."""
         subscription.async_subscribe_topics_internal(self.hass, self._sub_state)
 
-    async def async_set_native_value(self, value: date) -> None:
+    async def async_set_native_value(self, value: datetime.date) -> None:
         """Update the current value."""
 
         payload = self._command_template(value)

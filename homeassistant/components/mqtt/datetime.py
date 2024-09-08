@@ -8,12 +8,7 @@ import logging
 
 import voluptuous as vol
 
-from homeassistant.components.datetime import (
-    ATTR_ENABLE_SECOND,
-    DOMAIN,
-    ENTITY_ID_FORMAT,
-    DateTimeEntity,
-)
+from homeassistant.components import datetime as component
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_DEVICE_CLASS,
@@ -23,7 +18,7 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import config_validation as cv
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.service_info.mqtt import ReceivePayloadType
 from homeassistant.helpers.typing import ConfigType, VolSchemaType
 from homeassistant.util import dt as dt_util
@@ -36,7 +31,7 @@ from .const import (
     CONF_PAYLOAD_RESET,
     CONF_STATE_TOPIC,
 )
-from .mixins import MqttEntity, async_setup_entity_entry_helper
+from .entity import MqttEntity, async_setup_entity_entry_helper
 from .models import (
     MqttCommandTemplate,
     MqttValueTemplate,
@@ -47,6 +42,8 @@ from .schemas import MQTT_ENTITY_COMMON_SCHEMA
 
 _LOGGER = logging.getLogger(__name__)
 
+PARALLEL_UPDATES = 0
+
 DEFAULT_NAME = "MQTT Datetime"
 DEFAULT_PAYLOAD_RESET = "None"
 DEFAULT_ENABLE_SECOND = False
@@ -54,7 +51,7 @@ CONF_ENABLE_SECOND = "enable_second"
 
 MQTT_NUMBER_ATTRIBUTES_BLOCKED = frozenset(
     {
-        ATTR_ENABLE_SECOND,
+        component.ATTR_ENABLE_SECOND,
     }
 )
 
@@ -83,25 +80,25 @@ DISCOVERY_SCHEMA = vol.All(
 async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up MQTT datetime through YAML and through MQTT discovery."""
     async_setup_entity_entry_helper(
         hass,
         config_entry,
         MqttDatetime,
-        DOMAIN,
+        component.DOMAIN,
         async_add_entities,
         DISCOVERY_SCHEMA,
         PLATFORM_SCHEMA_MODERN,
     )
 
 
-class MqttDatetime(MqttEntity, DateTimeEntity):
+class MqttDatetime(MqttEntity, component.DateTimeEntity):
     """representation of an MQTT datetime."""
 
     _default_name = DEFAULT_NAME
-    _entity_id_format = ENTITY_ID_FORMAT
+    _entity_id_format = component.ENTITY_ID_FORMAT
     _attributes_extra_blocked = MQTT_NUMBER_ATTRIBUTES_BLOCKED
 
     _optimistic: bool
