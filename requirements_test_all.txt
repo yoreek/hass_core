@@ -2521,7 +2521,7 @@ yeelight==0.7.16
 yolink-api==0.4.9
 
 # homeassistant.components.frontend
-yoree-home-assistant-frontend==20250412.0
+yoreek-home-assistant-frontend==20250412.0
 
 # homeassistant.components.youless
 youless-api==2.2.0
