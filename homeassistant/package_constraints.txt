@@ -38,7 +38,6 @@ habluetooth==3.37.0
 hass-nabucasa==0.94.0
 hassil==2.2.3
 home-assistant-bluetooth==1.13.1
-home-assistant-frontend==20250411.0
 home-assistant-intents==2025.3.28
 httpx==0.28.1
 ifaddr==0.2.0
@@ -75,6 +74,7 @@ voluptuous-serialize==2.6.0
 voluptuous==0.15.2
 webrtc-models==0.3.0
 yarl==1.18.3
+yoreek-home-assistant-frontend==20250412.0
 zeroconf==0.146.0
 
 # Constrain pycryptodome to avoid vulnerability

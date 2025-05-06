@@ -1,0 +1,10 @@
+set_value:
+  target:
+    entity:
+      domain: duration
+  fields:
+    duration:
+      required: true
+      example: "22:15:44"
+      selector:
+        duration:

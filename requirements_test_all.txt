@@ -983,9 +983,6 @@ hole==0.8.0
 # homeassistant.components.workday
 holidays==0.70
 
-# homeassistant.components.frontend
-home-assistant-frontend==20250411.0
-
 # homeassistant.components.conversation
 home-assistant-intents==2025.3.28
 
@@ -2522,6 +2519,9 @@ yeelight==0.7.16
 
 # homeassistant.components.yolink
 yolink-api==0.4.9
+
+# homeassistant.components.frontend
+yoreek-home-assistant-frontend==20250412.0
 
 # homeassistant.components.youless
 youless-api==2.2.0
